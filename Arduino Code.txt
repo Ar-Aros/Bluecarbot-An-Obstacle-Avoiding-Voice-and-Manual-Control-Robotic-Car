@@ -1,0 +1,246 @@
+#include <Servo.h>
+#include <AFMotor.h>
+
+// Ultrasonic sensor pins
+#define Echo A0
+#define Trig A1
+
+// Motor control pins
+int in1 = 4;
+int in2 = 5;
+int in3 = 6;
+int in4 = 7;
+
+// Servo object
+Servo myservo;
+
+// Variables for distance measurement
+long duration;
+int distance;
+
+// Bluetooth control variable
+char value;
+
+// Setup function
+void setup() {
+  Serial.begin(9600);
+  pinMode(Trig, OUTPUT);
+  pinMode(Echo, INPUT);
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
+  myservo.attach(9);
+  Stop(); // Stop motors initially
+}
+
+// Main Loop
+void loop() {
+  measureDistance();
+  BluetoothControl();
+}
+
+// Function to measure distance
+void measureDistance() {
+  digitalWrite(Trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(Trig, HIGH);
+  delayMicroseconds(10);
+  duration = pulseIn(Echo, HIGH);
+  distance = duration / 58.2;
+}
+
+// Function to control via Bluetooth
+  void Bluetoothcontrol() {
+  
+  if (Serial.available() > 0) {
+    value = Serial.read();
+    Serial.println(value);
+  }
+  if (value == 'F') {
+    forward();
+  } else if (value == 'B') {
+    backward();
+  } else if (value == 'L') {
+    left();
+  } else if (value == 'R') {
+    right();
+  } else if (value == 'S') {
+    Stop();
+  }
+  else if (value == 'A') {
+     
+   // Bluetoothcontrol();
+     while(value !='a')
+     {
+       value = Serial.read();
+      automood();
+     }
+   
+  }
+
+  else if (value == 'r') {
+    rightsee();
+  }
+  else if (value == 'l') {
+    leftsee();
+  }
+}
+
+
+
+void automood()
+{
+  digitalWrite(in1, LOW);
+digitalWrite(in2, LOW);
+digitalWrite(in3, LOW);
+digitalWrite(in4, LOW);
+ myservo.write(0);
+   delay(500);
+   dis();
+   d1=distance;
+   dis();
+   d2=distance;
+   dis();
+   d3=distance;
+   dis();
+   d4=distance;
+
+   fordis=(d1+d2+d3+d4)/4;
+ 
+   go();
+}
+void go()
+{
+  if(fordis>20)
+  forward();
+  if(fordis<20)
+  {
+    myservo.write(90);
+   delay(500);
+    dis();
+   d1=distance;
+   dis();
+   d2=distance;
+   dis();
+   d3=distance;
+   dis();
+   d4=distance;
+ myservo.write(500);
+   delay(300);
+   rightdis=(d1+d2+d3+d4)/4;
+    dis();
+   d1=distance;
+   dis();
+   d2=distance;
+   dis();
+   d3=distance;
+   dis();
+   d4=distance;
+   leftdis=(d1+d2+d3+d4)/4;
+    if(rightdis<leftdis)
+    {left();}
+    if(rightdis>leftdis)
+    {right();}
+
+  }
+}
+
+void leftsee()
+{
+   myservo.write(90);
+   delay(300);
+    myservo.write(0);
+}
+void rightsee()
+{
+   myservo.write(180);
+   delay(300);
+    myservo.write(0);
+}
+
+void dis()
+{
+   digitalWrite(Trig, LOW);
+
+  delayMicroseconds(2);   
+
+  digitalWrite(Trig, HIGH);     // send waves for 10 us
+
+  delayMicroseconds(10);
+
+  duration = pulseIn(Echo, HIGH); // receive reflected waves
+
+  distance = duration / 58.2;   // convert to distance
+
+  delay(10);
+}
+
+
+void forward() {
+  digitalWrite(in1, HIGH);
+digitalWrite(in2, LOW);
+digitalWrite(in3, HIGH);
+digitalWrite(in4, LOW);
+delay(150);
+  digitalWrite(in1, LOW);
+digitalWrite(in2, LOW);
+digitalWrite(in3, LOW);
+digitalWrite(in4, LOW);
+delay(50);
+  digitalWrite(in1, HIGH);
+digitalWrite(in2, LOW);
+digitalWrite(in3, HIGH);
+digitalWrite(in4, LOW);
+  digitalWrite(in1, LOW);
+digitalWrite(in2, LOW);
+digitalWrite(in3, LOW);
+digitalWrite(in4, LOW);
+delay(50);
+
+}
+void backward() {
+    digitalWrite(in1, LOW);
+digitalWrite(in2, HIGH);
+digitalWrite(in3, LOW);
+digitalWrite(in4, HIGH);
+delay(150);
+  digitalWrite(in1, LOW);
+digitalWrite(in2, LOW);
+digitalWrite(in3, LOW);
+digitalWrite(in4, LOW);
+delay(50);
+
+}
+void right() {
+   digitalWrite(in1, LOW);
+digitalWrite(in2, LOW);
+digitalWrite(in3, HIGH);
+digitalWrite(in4, LOW);
+delay(150);
+  digitalWrite(in1, LOW);
+digitalWrite(in2, LOW);
+digitalWrite(in3, LOW);
+digitalWrite(in4, LOW);
+delay(50);
+
+}
+void left() {
+   digitalWrite(in1, HIGH);
+digitalWrite(in2, LOW);
+digitalWrite(in3, LOW);
+digitalWrite(in4, LOW);
+delay(150);
+  digitalWrite(in1, LOW);
+digitalWrite(in2, LOW);
+digitalWrite(in3, LOW);
+digitalWrite(in4, LOW);
+delay(50);
+
+}
+void Stop() {
+  digitalWrite(in1, LOW);
+digitalWrite(in2, LOW);
+digitalWrite(in3, LOW);
+digitalWrite(in4, LOW);
+}
