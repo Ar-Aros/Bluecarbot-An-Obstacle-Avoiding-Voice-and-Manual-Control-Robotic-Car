@@ -1,0 +1,1 @@
+Its an Arduino based robotic project. We have build a robotic car using arduino, sonar sensor, bluetooth and other neccessary components. It can avoid obstacles in auto mode using sonar sensor. It can be controlled by a phone application over bluetooth. It can also be controlled over voice commands with the phone application. 
